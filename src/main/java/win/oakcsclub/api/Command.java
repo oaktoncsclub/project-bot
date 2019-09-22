@@ -20,16 +20,6 @@ public interface Command {
     @NonNull List<String> getNames();
 
     /**
-     *
-     * disabled:
-     * - won't show up in the help menu
-     * - won't run when called. Will inform the user that the command is disabled
-     * This method should be pure, and having it be non-pure will result in undefined behavior
-     * @return true if the developer wants this command to be disabled.
-     */
-    boolean isDisabled(); // TODO actually use this value in code
-
-    /**
      * this is a short help message shown on the main help menu
      * @return a non-null String
      */
@@ -49,7 +39,7 @@ public interface Command {
      * This should also be a pure method
      */
     @NonNull
-    PermissionLevel getPermissionLevelNeeded(); //TODO implement this
+    PermissionLevel getPermissionLevelNeeded(); //TODO implement this check in code
 
 
     /**
