@@ -11,6 +11,7 @@ import reactor.util.function.Tuples;
 import win.oakcsclub.api.Command;
 import win.oakcsclub.api.Context;
 import win.oakcsclub.commands.HelpCommand;
+import win.oakcsclub.commands.PermsCommand;
 import win.oakcsclub.commands.PingCommand;
 
 import java.awt.*;
@@ -42,7 +43,7 @@ public class Main {
 
 
 
-  public static List<Command> commands = listOf(new PingCommand(),new HelpCommand());
+  public static List<Command> commands = listOf(new PingCommand(),new HelpCommand(),new PermsCommand());
 
   private static PrefixFetcher prefixFetcher = new SinglePrefixFetcher(">>");
 
