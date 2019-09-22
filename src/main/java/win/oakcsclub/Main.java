@@ -9,10 +9,8 @@ import discord4j.core.object.util.Snowflake;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
 import win.oakcsclub.api.Command;
+import win.oakcsclub.api.CommandLoader;
 import win.oakcsclub.api.Context;
-import win.oakcsclub.commands.HelpCommand;
-import win.oakcsclub.commands.PermsCommand;
-import win.oakcsclub.commands.PingCommand;
 
 import java.awt.*;
 import java.io.File;
@@ -43,7 +41,12 @@ public class Main {
 
 
 
-  public static List<Command> commands = listOf(new PingCommand(),new HelpCommand(),new PermsCommand());
+
+  public static List<Command> commands = CommandLoader.loadCommands();
+
+  static {
+    commands.forEach(command -> System.out.println("loaded command " + command.getNames().get(0)));
+  }
 
   private static PrefixFetcher prefixFetcher = new SinglePrefixFetcher(">>");
 

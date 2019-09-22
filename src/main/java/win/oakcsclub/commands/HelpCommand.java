@@ -2,45 +2,23 @@ package win.oakcsclub.commands;
 
 import reactor.core.publisher.Mono;
 import win.oakcsclub.Main;
-import win.oakcsclub.PermissionLevel;
 import win.oakcsclub.api.Command;
+import win.oakcsclub.api.CommandX;
 import win.oakcsclub.api.Context;
 
 import java.awt.*;
 import java.time.Instant;
-import java.util.List;
 
 import static win.oakcsclub.Util.first;
-import static win.oakcsclub.Util.listOf;
 
-public class HelpCommand implements Command {
-
-
-    @Override
-    public List<String> getNames() {
-        return listOf("help");
-    }
-    @Override
-    public String getShortHelpMenu() {
-        return "tells you how commands work";
-    }
-
-    @Override
-    public String getLongHelpMenu() {
-        return "you can call this command with zero or one arguments. " +
-                "Calling it with none will give you the main help menu, " +
-                "which shows all commands and a brief description of each. " +
-                "Or, you can put the command name you want to learn more about as an argument " +
-                "to get the longer description of that command";
-    }
-
-    @Override
-    public PermissionLevel getPermissionLevelNeeded() {
-        return PermissionLevel.MEMBER;
-    }
-
-    @Override
-    public Mono<Void> run(Context context) {
+public class HelpCommand {
+    @CommandX(names = {"help","h"},shortHelp = "tells you how commands work",
+            longHelp = "you can call this command with zero or one arguments. " +
+                    "Calling it with none will give you the main help menu, " +
+                    "which shows all commands and a brief description of each. " +
+                    "Or, you can put the command name you want to learn more about as an argument " +
+                    "to get the longer description of that command")
+    public static Mono<Void> helpCommand(Context context){
         if(context.getArguments().isEmpty()){
             // main help menu
             return context.createEmbed(emb ->{
