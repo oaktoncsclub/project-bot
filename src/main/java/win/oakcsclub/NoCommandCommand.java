@@ -1,6 +1,5 @@
 package win.oakcsclub;
 
-import kotlin.NotImplementedError;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
 import win.oakcsclub.api.Command;
@@ -21,7 +20,7 @@ public class NoCommandCommand implements Command {
 
     @Override
     public List<String> getNames() {
-        throw new NotImplementedError();
+        throw new AssertionError("this command can not be called with a name");
     }
 
     @Override
