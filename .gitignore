@@ -1,0 +1,8 @@
+.gradle/
+build/
+.idea/
+
+# if you commit key.txt, you should go commit die
+# and then reset your token
+# keys don't belong in source control
+key.txt
