@@ -1,7 +1,6 @@
 package win.oakcsclub.commands;
 
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.NonNull;
 import win.oakcsclub.Main;
 import win.oakcsclub.PermissionLevel;
 import win.oakcsclub.api.Command;
@@ -21,10 +20,6 @@ public class HelpCommand implements Command {
     public List<String> getNames() {
         return listOf("help");
     }
-
-    @Override
-    public boolean isDisabled() { return false; }
-
     @Override
     public String getShortHelpMenu() {
         return "tells you how commands work";

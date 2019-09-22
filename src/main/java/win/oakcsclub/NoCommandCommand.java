@@ -1,13 +1,10 @@
 package win.oakcsclub;
 
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.NonNull;
-import reactor.util.function.Tuples;
 import win.oakcsclub.api.Command;
 import win.oakcsclub.api.Context;
 
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -22,11 +19,6 @@ public class NoCommandCommand implements Command {
     @Override
     public List<String> getNames() {
         throw new AssertionError("this command can not be called with a name");
-    }
-
-    @Override
-    public boolean isDisabled() {
-        return false;
     }
 
     @Override

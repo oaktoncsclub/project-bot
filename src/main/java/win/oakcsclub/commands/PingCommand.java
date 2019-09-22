@@ -1,24 +1,18 @@
 package win.oakcsclub.commands;
 
 import reactor.core.publisher.Mono;
-import reactor.util.annotation.NonNull;
 import win.oakcsclub.PermissionLevel;
 import win.oakcsclub.api.Command;
 import win.oakcsclub.api.Context;
 
 import java.util.List;
 
-import static win.oakcsclub.Util.*;
+import static win.oakcsclub.Util.listOf;
 
 public class PingCommand implements Command {
     @Override
     public List<String> getNames() {
         return listOf("ping");
-    }
-
-    @Override
-    public boolean isDisabled() {
-        return false;
     }
 
     @Override
