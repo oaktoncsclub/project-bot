@@ -1,5 +1,6 @@
 .gradle/
 build/
+out/
 .idea/
 
 # if you commit key.txt, you should go commit die
