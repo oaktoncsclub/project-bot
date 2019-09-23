@@ -39,6 +39,15 @@ public class TestingCommands {
         return Mono.empty();
     }
 
+    @CommandX(names = {"contribute","c"}, shortHelp = "start contributing!",
+            longHelp = "call this command to get information about contributing.")
+    public static Mono<Void> contributeCommand(Context context){
+        return context.createMessage("You can start contributing by reading the wiki," +
+                " which you find at https://github.com/oaktoncsclub/project-bot/wiki. " +
+                "Feel free to ping the maintainer of this project, <@293853365891235841> if you have any questions" +
+                " whatsoever. Happy coding! :tada:").then();
+    }
+
 
     @CommandX(names = {"perms","perm","permission","permissions"}, shortHelp =  "query your permission level",
             longHelp = "you can call this command with zero or one arguments. " +
