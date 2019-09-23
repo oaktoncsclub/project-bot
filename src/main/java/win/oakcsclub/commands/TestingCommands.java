@@ -1,9 +1,14 @@
 package win.oakcsclub.commands;
 
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.spec.MessageEditSpec;
 import reactor.core.publisher.Mono;
 
 import win.oakcsclub.api.CommandX;
 import win.oakcsclub.api.Context;
+
+import java.util.function.Consumer;
 
 public class TestingCommands {
     @CommandX(names = {"ping"}, shortHelp = "Time the connection to Discord",
@@ -20,6 +25,20 @@ public class TestingCommands {
                 .then(); // ignores the outputted result, because it will be different between commands
     }
 
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
+    @CommandX(names = "ping-blocking",shortHelp = "ping but use blocking code",
+        longHelp = "this ping implementation blocks a thread until it completes.")
+    public static Mono<Void> pingCommandBlocking(Context context){
+        Message m1 = context.createMessage("Pinging....").block();
+        if(m1 == null){
+            throw new IllegalStateException("message1 can not be null");
+        }
+        // compare the timestamps
+        long msPing = m1.getTimestamp().toEpochMilli() - context.message.getTimestamp().toEpochMilli();
+        m1.edit(spec -> spec.setContent("Ping:" + msPing + "ms")).block();
+        return Mono.empty();
+    }
+
 
     @CommandX(names = {"perms","perm","permission","permissions"}, shortHelp =  "query your permission level",
             longHelp = "you can call this command with zero or one arguments. " +
@@ -31,6 +50,5 @@ public class TestingCommands {
         return context.createMessage("Your permission level: " + context.highestPermission.toString().toLowerCase())
                 .then();
     }
-
 
 }
