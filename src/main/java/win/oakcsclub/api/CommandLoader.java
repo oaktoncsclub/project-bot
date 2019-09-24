@@ -4,7 +4,7 @@ import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import reactor.core.publisher.Mono;
 import win.oakcsclub.PermissionLevel;
-import win.oakcsclub.commands.TestingCommands;
+// import win.oakcsclub.commands.TestingCommands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
