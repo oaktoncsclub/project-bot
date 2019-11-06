@@ -12,8 +12,14 @@ repositories {
 }
 
 dependencies {
-    implementation "com.discord4j:discord4j-core:3.0.9"
-    implementation "org.reflections:reflections:0.9.11"
+    implementation "com.discord4j:discord4j-core:3.0.9" // this is the discord library
+    implementation "org.reflections:reflections:0.9.11" // this is the reflections library for command loading
+
+    implementation "org.jdbi:jdbi3-core:3.8.2" // this is for a database api
+    implementation "org.xerial:sqlite-jdbc:3.28.0" // this is for using a sqlite database
+
+    implementation "org.slf4j:slf4j-simple:1.7.25" // this is for logging
+
 }
 
 

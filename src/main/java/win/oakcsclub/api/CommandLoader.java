@@ -3,8 +3,6 @@ package win.oakcsclub.api;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
 import reactor.core.publisher.Mono;
-import win.oakcsclub.PermissionLevel;
-import win.oakcsclub.commands.TestingCommands;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,17 +23,21 @@ public class CommandLoader {
                     annotation.shortHelp(),
                     annotation.longHelp(),
                     annotation.permissionsNeeded(),
-                    (c -> {
+                    c -> {
                         try {
                             @SuppressWarnings("unchecked")
                             Mono<Void> m = (Mono<Void>)method.invoke(null,new Object[]{ c });
                             return m.then();
-                        } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
+                        } catch (InvocationTargetException e){
+                            e.getCause().printStackTrace();
+                            return Mono.just("").then();
+                        } catch (IllegalAccessException | IllegalArgumentException e) {
                             e.printStackTrace();
 //                            throw new RuntimeException(e);// this should crash the program
+
                             return Mono.just("").then();
                         }
-                    })
+                    }
             );
             commands.add(command);
         }

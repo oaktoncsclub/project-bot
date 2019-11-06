@@ -25,6 +25,11 @@ public class Main {
   public static void main(String[] args) {
       // this is the main client.
       DiscordClient client = new DiscordClientBuilder(getKey()).build();
+
+      client.getEventDispatcher().on(MessageCreateEvent.class)
+          .flatMap(it -> Mono.justOrEmpty(it.getMessage().getContent()))
+          .subscribe(System.out::println);
+
       // block means wait until it completes.
       // completes can mean three things:
       //  a) it completes with a value

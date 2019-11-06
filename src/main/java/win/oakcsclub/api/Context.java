@@ -4,6 +4,7 @@ import discord4j.core.object.entity.Message;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import reactor.core.publisher.Mono;
+import win.oakcsclub.Database;
 import win.oakcsclub.PermissionLevel;
 
 import java.awt.*;
@@ -16,7 +17,11 @@ public class Context {
     public final String prefixUsed;
     public final String commandNameUsed;
 
-    public Context(Message message, PermissionLevel highestPermission, String content, String prefixUsed, String commandNameUsed) {
+    public Context(Message message,
+                   PermissionLevel highestPermission,
+                   String content,
+                   String prefixUsed,
+                   String commandNameUsed) {
         this.message = message;
         this.highestPermission = highestPermission;
         this.content = content;

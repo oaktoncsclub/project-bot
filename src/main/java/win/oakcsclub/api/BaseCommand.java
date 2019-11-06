@@ -13,7 +13,7 @@ public class BaseCommand implements Command {
     private final PermissionLevel permissionLevel;
     private final Function<Context,Mono<Void>> runner;
 
-    public BaseCommand(List<String> names, String shortHelp, String longHelp, PermissionLevel permissionLevel, Function<Context, Mono<Void>> runner) {
+    BaseCommand(List<String> names, String shortHelp, String longHelp, PermissionLevel permissionLevel, Function<Context, Mono<Void>> runner) {
         this.names = names;
         this.shortHelp = shortHelp;
         this.longHelp = longHelp;
