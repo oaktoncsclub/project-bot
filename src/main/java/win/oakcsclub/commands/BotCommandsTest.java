@@ -10,7 +10,7 @@ import win.oakcsclub.api.Context;
 
 import java.util.function.Consumer;
 
-public class TestingCommands {
+public class BotCommandsTest {
     @CommandX(names = {"ping"}, shortHelp = "Time the connection to Discord",
             longHelp = "This command times the time it takes to make a full command request from Discord\n" +
                     "It measures the time from the creation of the message to the response by the bot\n" +
