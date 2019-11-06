@@ -14,6 +14,7 @@ import win.oakcsclub.Database;
 import win.oakcsclub.api.CommandX;
 import win.oakcsclub.api.Context;
 
+import javax.xml.crypto.Data;
 import java.awt.*;
 import java.time.Duration;
 import java.util.Optional;
@@ -54,10 +55,56 @@ public class ProjectCommand {
         case "description":
         case "desc":
             return desc(context);
-        // TODO >>project help menu
+        case "list":
+            return list(context);
+    case "":
+        case "help":
+        return context.createMessage("" +
+            "project commands for users:\n" +
+            "```\n" +
+            ">>project status [project-name]\n" +
+            ">>project description [project-name]\n" +
+            ">>project list\n" +
+            ">>project help\n" +
+            "```\n" +
+            "project commands for managing projects:\n" +
+            "```\n" +
+            ">>project create\n" +
+            ">>project set-leader [project-name] [leader mention]\n" +
+            ">>project set-channel [project-name] [channel mention]\n" +
+            ">>project set-desc [project-name] [desc]\n" +
+            ">>project add-member [project-name] [user(s) mentions]\n" +
+            ">>project remove-member [project-name] [user(s) mentions]\n" +
+            "```").then();
     }
     return context.userError("Can't find project command " + projectCommand).then();
   }
+
+    private static Mono<Void> list(Context context) {
+
+        class Pair<A,B> {
+            final A a;
+            final B b;
+            private Pair(A a, B b) {
+                this.a = a;
+                this.b = b;
+            }
+        }
+        return context.createEmbed(e -> {
+            e.setTitle("Projects:");
+
+            Database.get().withHandle(h ->
+                h.createQuery("SELECT name, description FROM project")
+                    .map((row,ctx) -> new Pair<>(row.getString("name"), row.getString("description"))))
+                .forEach(project -> {
+                    String desc = project.b;
+                    if(desc.length() > 500) {
+                        desc = desc.substring(0,500) + "...";
+                    }
+                    e.addField(project.a,desc,false);
+                });
+        }).then();
+    }
 
     private static Mono<Void> desc(Context context) {
         String projectName = context.getArguments()
@@ -403,6 +450,7 @@ public class ProjectCommand {
     private static Mono<Void> setDesc(Context context) {
 
         String[] split = context.getArguments().replaceFirst("set-desc","").trim().split(" ",2);
+        if(split.length == 1) return context.userError("Nope, you need to have a description").then();
         String projectName = split[0];
         String desc = split[1];
         Mono<Boolean> allowed = context.message.getAuthorAsMember().map(author ->
