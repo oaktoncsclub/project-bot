@@ -38,25 +38,19 @@ public class ProjectCommand {
     String projectCommand = context.getArguments().split(" ")[0];
     // TODO if projectCommand is blank, show the help menu
     switch (projectCommand) {
-      case "create":
-        return projectCreate(context);
-      case "set-leader":
-        return setLeader(context);
-      case "set-channel":
-        return setChannel(context);
-        case "set-desc":
-            return setDesc(context);
-      case "add-member":
-        return mutateMember(true,context);
-      case "remove-member":
-        return mutateMember(false,context);
+      case "create": return projectCreate(context);
+      case "set-leader": return setLeader(context);
+      case "set-channel": return setChannel(context);
+        case "set-desc": return setDesc(context);
+      case "add-member": return mutateMember(true,context);
+      case "remove-member": return mutateMember(false,context);
     case "status":
         return status(context);
         case "description":
         case "desc":
             return desc(context);
-        case "list":
-            return list(context);
+        case "list": return list(context);
+        case "set-role": return setRole(context);
     case "":
         case "help":
         return context.createMessage("" +
@@ -75,6 +69,7 @@ public class ProjectCommand {
             ">>project set-desc [project-name] [desc]\n" +
             ">>project add-member [project-name] [user(s) mentions]\n" +
             ">>project remove-member [project-name] [user(s) mentions]\n" +
+            ">>project set-role [project-name] [role-ID]\n" +
             "```").then();
     }
     return context.userError("Can't find project command " + projectCommand).then();
@@ -143,33 +138,36 @@ public class ProjectCommand {
         return Database.get().withHandle(h -> h.createQuery("SELECT * FROM project WHERE name = :name")
             .bind("name", projectName)
             .map((row,ctx) -> {
+                System.out.println("building status board");
                 Snowflake projectLeader = Snowflake.of(row.getString("projectLeader"));
                 Snowflake projectChannel = Snowflake.of(row.getString("channel"));
                 Snowflake roleId = Snowflake.of(row.getString("role"));
                 String desc = row.getString("description");
                 boolean isAcceptingNewMembers = row.getInt("isAcceptingNewMembers") == 1;
                 boolean isRunning = row.getInt("isStillRunning") == 1;
-                Mono<User> username = context.message.getClient().getUserById(projectLeader).cache();
+                Mono<User> username = context.message.getClient().getUserById(projectLeader);//.cache();
                 // because we call username twice, it's we should cache the value.
+                // turns out cache does other things. Whatever
 
                 String channelMention = "<#" + projectChannel.asString() + ">";
 
                 Mono<String> roleNameMono = context.message.getGuild()
                     .flatMap(i ->  i.getRoleById(roleId))
-                    .map(Role::getName);
+                    .map(Role::getName)
+                    .switchIfEmpty(Mono.just("ohno can't find role"));
 
                 Mono<Member> member = context.message.getGuild().flatMap(guild -> username.flatMap(it -> it.asMember(guild.getId())));
 
 
-                Mono<String> titleMono = member.map(i ->
-                    i.getNickname().map(nick ->
-                        nick + " (" + i.getUsername() + "#" + i.getDiscriminator() + ")"
-                    ).orElseGet(() -> i.getUsername() + "#" + i.getDiscriminator()));
+                Mono<String> titleMono = member.flatMap(i ->
+                    Mono.justOrEmpty(i.getNickname().map(nick -> nick + " (" + i.getUsername() + "#" + i.getDiscriminator() + ")")))
+                    .switchIfEmpty(member.map(i -> i.getUsername() + "#" + i.getDiscriminator()));
 
                 return username
                     .zipWith(roleNameMono)
                     .zipWith(titleMono)
                     .flatMap(tuple -> context.createEmbed(e -> {
+                        System.out.println("creating embed");
                         User user = tuple.getT1().getT1();
 
                         String roleName = tuple.getT1().getT2();
@@ -466,6 +464,30 @@ public class ProjectCommand {
         return allowed.flatMap(b -> {
             if(b){
                 Database.get().useHandle(h -> h.execute("UPDATE project SET description = ? WHERE name = ?",desc,projectName));
+                return context.createMessage("Success!");
+            } else {
+                return context.userError("permission error");
+            }
+        }).then();
+    } private static Mono<Void> setRole(Context context) {
+
+        String[] split = context.getArguments().replaceFirst("set-role","").trim().split(" ",2);
+        if(split.length == 1) return context.userError("you need to have a role description").then();
+        String projectName = split[0];
+        String roleID = split[1];
+        Mono<Boolean> allowed = context.message.getAuthorAsMember().map(author ->
+            author.getRoleIds().contains(Snowflake.of("365228273044553728")) // the [admin] role
+                || Database.get().withHandle(h ->
+                h.createQuery("SELECT projectLeader FROM project WHERE name = :name")
+                    .bind("name",projectName)
+                    .mapTo(String.class)
+                    .first()
+                    .equals(author.getId().asString())
+            )
+        );
+        return allowed.flatMap(b -> {
+            if(b){
+                Database.get().useHandle(h -> h.execute("UPDATE project SET role = ? WHERE name = ?",roleID,projectName));
                 return context.createMessage("Success!");
             } else {
                 return context.userError("permission error");
