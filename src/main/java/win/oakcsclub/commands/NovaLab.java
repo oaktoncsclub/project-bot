@@ -1,36 +1,37 @@
 package win.oakcsclub.commands;
 
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.GuildChannel;
 import discord4j.core.object.entity.GuildMessageChannel;
+import discord4j.core.object.entity.Message;
 import discord4j.core.object.util.Snowflake;
 import org.antlr.v4.runtime.misc.Pair;
 import reactor.core.publisher.Mono;
 import win.oakcsclub.api.CommandX;
 import win.oakcsclub.api.Context;
 
-import java.lang.reflect.Array;
 import java.time.Instant;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class NovaLab {
     private static Map<String, Map<String, Integer>> messages;
 
-    @CommandX(names={"pull"}, shortHelp = "no", longHelp = "nope")
+    @CommandX(names={"pull"}, shortHelp = "get all previous messages", longHelp = "nope")
     public static Mono<Void> pull (Context context){
         return context.message.getChannel()
                 .cast(GuildMessageChannel.class)
-                .flatMap(channel -> channel.getGuild())
-                .flatMapMany(guild -> guild.getChannels())
+                .filter(channel -> !channel.getId().equals(Snowflake.of(368586175864373250L)))//officer channel
+                .flatMap(GuildChannel::getGuild)
+                .flatMapMany(Guild::getChannels)
                 .ofType(GuildMessageChannel.class)
                 .flatMap(channel -> channel.getMessagesBefore(Snowflake.of(Instant.now())))
-                .map(message -> message.getContent())
-                .filter(content -> content.isPresent())
-                .map(content -> content.get())
+                .map(Message::getContent)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collectList()
                 .doOnNext(allContent -> messages = construct(allContent))
-                .map(list -> list.size())
+                .map(List::size)
                 .flatMap(count -> context.createMessage("messages fetched: " + count))
                 .then();
     }
