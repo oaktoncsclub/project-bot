@@ -69,6 +69,7 @@ public class NoCommandCommand implements Command {
                 int dis = distance(name,commandName);
                 if(dis < distance){
                     closest = name;
+                    distance = dis;
                 }
             }
         }

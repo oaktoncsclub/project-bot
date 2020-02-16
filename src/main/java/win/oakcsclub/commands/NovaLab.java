@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class NovaLab {
     private static Map<String, Map<String, Integer>> messages;
 
-    @CommandX(names={"pull"}, shortHelp = "get all previous messages", longHelp = "nope")
+    //@CommandX(names={"pull"}, shortHelp = "get all previous messages", longHelp = "nope")
     public static Mono<Void> pull (Context context){
         return context.message.getChannel()
                 .cast(GuildMessageChannel.class)
@@ -35,11 +35,20 @@ public class NovaLab {
                 .flatMap(count -> context.createMessage("messages fetched: " + count))
                 .then();
     }
-    @CommandX(names = {"chain"}, shortHelp = "yes", longHelp = "yep")
+    @CommandX(names = {"chain"}, shortHelp = "create random sentence", longHelp = "use previous discord messages to generate a sentence")
     public static Mono<Void> chain (Context context){
-        if(messages == null) return context.createMessage("you have to run pull first").then();
+        if(messages == null) {
+            return context.createMessage("pulling first... ")
+                    .then(pull(context))
+                    .thenReturn(context)
+                    .flatMap(NovaLab::chain)
+                    .then();
+        }
         List<String> words = new ArrayList<>();
         words.add("--START--");
+        if(!context.getArguments().isBlank()){
+            words.add(context.getArguments());
+        }
         while(!words.get(words.size() - 1).equals("--END--") || words.size()>500){
             String lastWord = words.get(words.size()-1);
             Map<String, Integer> thisMap = messages.get(lastWord);

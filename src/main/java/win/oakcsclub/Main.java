@@ -97,7 +97,7 @@ public class Main {
                               exception.printStackTrace();// logging
                               return context.createEmbed(emb ->
                                       emb.setTitle("Internal Error:" + exception.getClass().getSimpleName())
-                                         .setDescription(exception.getMessage())
+                                         .setDescription("" + exception.getMessage())
                                          .setColor(Color.RED.brighter())
                               ).then();
                           });
