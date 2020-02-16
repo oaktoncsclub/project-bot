@@ -36,6 +36,9 @@ public class Context {
     public Mono<Message> createMessage(String content){
         return message.getChannel().flatMap(channel -> channel.createMessage(content));
     }
+    public Mono<Message> createPrivateMessage(String content){
+        return message.getAuthor().get().getPrivateChannel().flatMap(channel -> channel.createMessage(content));
+    }
     public Mono<Message> createMessage(Consumer<MessageCreateSpec> spec){
         return message.getChannel().flatMap(channel -> channel.createMessage(spec));
     }
