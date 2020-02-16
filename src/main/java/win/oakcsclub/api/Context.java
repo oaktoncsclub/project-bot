@@ -1,6 +1,7 @@
 package win.oakcsclub.api;
 
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
 import reactor.core.publisher.Mono;
@@ -16,6 +17,7 @@ public class Context {
     public final String content;
     public final String prefixUsed;
     public final String commandNameUsed;
+    public final Snowflake authorID;
 
     public Context(Message message,
                    PermissionLevel highestPermission,
@@ -27,6 +29,7 @@ public class Context {
         this.content = content;
         this.prefixUsed = prefixUsed;
         this.commandNameUsed = commandNameUsed;
+        this.authorID = message.getAuthor().get().getId();
     }
 
     // helper methods
