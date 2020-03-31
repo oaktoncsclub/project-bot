@@ -63,20 +63,22 @@ public class UnoGame {
             context.createMessage("not enough people to start :(").block();
             return;
         }
-        context.createMessage("picking done! "+players.size()+" players").block();
+        context.createMessage("picking done! " + players.size() + " players").block();
 
         List<Card> deck = new ArrayList<>();
         List<Card> discards = new ArrayList<>();
-        for(CardColor color: CardColor.values()){
-            for(int i=0; i<10; i++){
-                deck.add(new NormalCard(color, i));
-                if(i!=0){
+        for (int x = 0; x < 10 ; x++) {
+            for (CardColor color : CardColor.values()) {
+                for (int i = 0; i < 10; i++) {
                     deck.add(new NormalCard(color, i));
+                    if (i != 0) {
+                        deck.add(new NormalCard(color, i));
+                    }
                 }
-            }
-            for(FuckedUpCardType type: FuckedUpCardType.values()){
-                deck.add(new FuckedUpCard(color, type));
-                deck.add(new FuckedUpCard(color, type));
+                for (FuckedUpCardType type : FuckedUpCardType.values()) {
+                    deck.add(new FuckedUpCard(color, type));
+                    deck.add(new FuckedUpCard(color, type));
+                }
             }
         }
 
@@ -100,6 +102,7 @@ public class UnoGame {
         Card topCard = deck.remove(0);
         while (true) {
             Player player = hands.get(index);
+            player.orderCards();
             player.sendPrivateMessage("Your hand is: " + player + "\n top card is: " + topCard).block();
             final Card topCardFinal = topCard;
             List<Card> playableCards = player.cards.stream()
@@ -114,7 +117,7 @@ public class UnoGame {
                 index = (index + 1) % hands.size();
                 continue;
             }
-            player.sendPrivateMessage(playableCards.toString()).block();
+            player.sendPrivateMessage("Here are the cards you can play: \n" + playableCards.toString() + "\n Select one by index (0 base)").block();
             Integer number = context.message.getClient().getEventDispatcher().on(MessageCreateEvent.class)
                     .map(MessageCreateEvent::getMessage)
                     .filter(message -> message.getChannelId().equals(player.privateChannel.getId()))
@@ -160,7 +163,7 @@ public class UnoGame {
                             sadPlayer.addToHand(deck.remove(0));
                             sadPlayer.addToHand(deck.remove(0));
                             for (Player subPerson : hands) {
-                                subPerson.sendPrivateMessage(sadPlayer.playerName + " was drew 2 because of " + player.playerName).block();
+                                subPerson.sendPrivateMessage(sadPlayer.playerName + " drew 2 because of " + player.playerName).block();
                             }
                             index=(index+1)%hands.size();
                     }//switch
@@ -185,7 +188,7 @@ public class UnoGame {
             }
             if(hands.size()==1){
                 hands.get(0).sendPrivateMessage("congrats! you won by not losing").block();
-                context.createMessage(player.playerName + " was the last one standing").block();
+                context.createMessage(/*player.playerName*/ hands.get(0).playerName + " was the last one standing").block();
                 return;
             }
             index=(index+1)%hands.size();
@@ -202,7 +205,7 @@ enum CardColor{
         this.index = index;
     }
 }
-interface Card /*extends Comparable<Card>*/ {
+interface Card extends Comparable<Card> {
     boolean willGoOnTopOf(Card lastCard);
 }
 /*class WildCard implements Card{
@@ -265,6 +268,19 @@ class FuckedUpCard extends ColorCard{
             default:return "?? you're bad";
         }
     }
+
+    @Override
+    public int compareTo(Card o) {
+        if(o instanceof ColorCard){
+            if(color.index!=((ColorCard) o).color.index){
+                return color.index-((ColorCard) o).color.index;
+            }
+        }
+        if(o instanceof NormalCard){
+            return 1;
+        }
+        return type.ordinal() - ((FuckedUpCard) o).type.ordinal();
+    }
 }
 class NormalCard extends ColorCard{
     final int number;
@@ -287,6 +303,19 @@ class NormalCard extends ColorCard{
         }
         return false;
     }
+
+    @Override
+    public int compareTo(Card o) {
+        if(o instanceof ColorCard){
+            if(color.index!=((ColorCard) o).color.index){
+                return color.index-((ColorCard) o).color.index;
+            }
+        }
+        if(o instanceof FuckedUpCard){
+            return -1;
+        }
+        return number - ((NormalCard) o).number;
+    }
 }
 class Player {
     List<Card> cards = new ArrayList<>();
@@ -300,9 +329,9 @@ class Player {
         this.privateChannel = privateChannel;
     }
 
-    /*public void orderCards(){
+    public void orderCards(){
         Collections.sort(cards);
-    }*/
+    }
 
 
     public Mono<Message> sendPrivateMessage(String context){
