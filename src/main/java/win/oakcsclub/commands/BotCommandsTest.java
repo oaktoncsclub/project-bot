@@ -25,9 +25,18 @@ public class BotCommandsTest {
                 .then(); // ignores the outputted result, because it will be different between commands
     }
 
+
+
+
+
+
+
+
     @SuppressWarnings("BlockingMethodInNonBlockingContext")
-    @CommandX(names = "ping-blocking",shortHelp = "ping but use blocking code",
-        longHelp = "this ping implementation blocks a thread until it completes.")
+    @CommandX(
+            names = "ping-blocking",
+            shortHelp = "ping but use blocking code",
+            longHelp = "this ping implementation blocks a thread until it completes.")
     public static Mono<Void> pingCommandBlocking(Context context){
         Message m1 = context.createMessage("Pinging....").block();
         if(m1 == null){
@@ -38,6 +47,50 @@ public class BotCommandsTest {
         m1.edit(spec -> spec.setContent("Ping:" + msPing + "ms")).block();
         return Mono.empty();
     }
+
+
+
+
+
+
+
+
+
+    @SuppressWarnings("BlockingMethodInNonBlockingContext")
+    @CommandX(
+            names = "roll",
+            shortHelp = "roll a dice",
+            longHelp = "Roll a 6 sided dice.")
+    public static Mono<Void> roll(Context context){
+        int result = (int)(Math.random()*6) + 1;
+        context.createMessage("Rolled a " + result).block();
+        return Mono.empty();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @CommandX(names = {"contribute","c"}, shortHelp = "start contributing!",
             longHelp = "call this command to get information about contributing.")
