@@ -118,7 +118,7 @@ public class Main {
 
   private static String getKey(){
       // load key.txt
-      File key = new File("key.txt");
+      File key = new File("data/key.txt");
       try {
         String result = Files.readAllLines(key.toPath()).get(0);
         return result.trim(); // if the key.txt ends with \n, it will break stuff. trim it away

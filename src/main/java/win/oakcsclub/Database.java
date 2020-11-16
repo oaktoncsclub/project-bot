@@ -15,7 +15,7 @@ public class Database {
 
     static {
         try {
-            connection = Jdbi.create(DriverManager.getConnection("jdbc:sqlite:database.db"));
+            connection = Jdbi.create(DriverManager.getConnection("jdbc:sqlite:data/database.db"));
         } catch (SQLException e) {
             e.printStackTrace();
         }
