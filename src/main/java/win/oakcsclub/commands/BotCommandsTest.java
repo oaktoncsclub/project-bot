@@ -103,11 +103,7 @@ public class BotCommandsTest {
 
 
     @CommandX(names = {"perms","perm","permission","permissions"}, shortHelp =  "query your permission level",
-            longHelp = "you can call this command with zero or one arguments. " +
-                    "Calling it with none will give you the main help menu, " +
-                    "which shows all commands and a brief description of each. " +
-                    "Or, you can put the command name you want to learn more about as an argument " +
-                    "to get the longer description of that command")
+            longHelp = "call this command to learn what your permission level is")
     public static Mono<Void> permsCommand(Context context){
         return context.createMessage("Your permission level: " + context.highestPermission.toString().toLowerCase())
                 .then();
